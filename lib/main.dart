@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tour_guide_application/Controllers/authentication/auth_controller.dart';
 import 'package:tour_guide_application/Controllers/authentication/auth_gate.dart';
 import 'package:tour_guide_application/Utilis/Theme/chatbot_theme.dart';
@@ -11,6 +12,7 @@ import 'package:tour_guide_application/Controllers/calendar_controller.dart';
 import 'package:tour_guide_application/Controllers/chatbot/chatbot_controller.dart';
 import 'package:tour_guide_application/Utilis/routes.dart';
 import 'package:tour_guide_application/core/config/app_config.dart';
+import 'package:tour_guide_application/l10n/app_localizations.dart';
 
 
 Future<void> main() async {
@@ -30,7 +32,6 @@ Future<void> main() async {
     log("❌ Supabase initialization error: $e");
     runApp(const ErrorApp());
   }
-}
 }
 
 class ErrorApp extends StatelessWidget {
@@ -67,13 +68,38 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Tour Guide',
+        title: 'Travel Explorer AI',
         theme: ThemeData(
           primarySwatch: Colors.teal,
           scaffoldBackgroundColor: AppColors.lightBackground,
           fontFamily: 'Poppins',
         ),
+        darkTheme: ThemeData(
+          primarySwatch: Colors.teal,
+          scaffoldBackgroundColor: AppColors.darkBackground,
+          fontFamily: 'Poppins',
+          brightness: Brightness.dark,
+        ),
         themeMode: ThemeMode.system,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('en', ''),
+          Locale('ar', ''),
+        ],
+        localeResolutionCallback: (locale, supportedLocales) {
+          if (locale == null) return supportedLocales.first;
+          for (final supportedLocale in supportedLocales) {
+            if (supportedLocale.languageCode == locale.languageCode) {
+              return supportedLocale;
+            }
+          }
+          return supportedLocales.first;
+        },
         home: const AuthGate(),
         routes: Routes.getRoutes(),
         onGenerateRoute: Routes.generateRoute,
