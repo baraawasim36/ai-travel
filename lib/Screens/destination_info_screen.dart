@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 
 class TombInfoScreen extends StatelessWidget {
   // Hardcoded data for Tomb of Shah Rukh-e-Alaam and other Multan tombs
+  // TODO: Replace with dynamic Experience detail from backend (Phase 1)
   final String description = """
 The Tomb of Shah Rukh-e-Alaam, located in Multan, Pakistan, is a historic shrine dedicated to the revered Sufi saint Shah Rukh-e-Alaam. Built in the 14th century, this beautifully adorned structure features intricate tile work and a serene courtyard, attracting devotees and tourists alike. The tomb is a symbol of Multan's rich cultural and spiritual heritage.
 """;
 
   final List<String> pictures = [
-    "https://example.com/tomb1.jpg",
-    "https://example.com/tomb2.jpg",
-    "https://example.com/tomb3.jpg",
+    "assets/images/tomb1.jpg",
+    "assets/images/tomb2.jpg",
+    "assets/images/tomb3.jpg",
+    "assets/images/tomb4.jpg",
   ];
 
   final List<String> foodRecommendations = [
@@ -67,11 +69,18 @@ The Tomb of Shah Rukh-e-Alaam, located in Multan, Pakistan, is a historic shrine
                       ),
                 ),
                 const SizedBox(height: 10),
-                ...pictures.map((url) => Padding(
+                ...pictures.map((assetPath) => Padding(
                       padding: const EdgeInsets.only(bottom: 10),
-                      child: Text(
-                        url,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                      child: Image.asset(
+                        assetPath,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: 200,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          height: 200,
+                          color: Colors.grey[300],
+                          child: const Center(child: Text('Image not found')),
+                        ),
                       ),
                     )),
                 const SizedBox(height: 20),

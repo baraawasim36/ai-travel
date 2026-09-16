@@ -10,17 +10,18 @@ import 'package:tour_guide_application/Controllers/country_controllers.dart';
 import 'package:tour_guide_application/Controllers/calendar_controller.dart';
 import 'package:tour_guide_application/Controllers/chatbot/chatbot_controller.dart';
 import 'package:tour_guide_application/Utilis/routes.dart';
+import 'package:tour_guide_application/core/config/app_config.dart';
 
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
+    AppConfig.validate();
     log("Initializing Supabase...");
     await Supabase.initialize(
-      url: 'https://wkwhjswjekqlugndxegl.supabase.co',
-      anonKey:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indrd2hqc3dqZWtxbHVnbmR4ZWdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0Nzg3MTQsImV4cCI6MjA1ODA1NDcxNH0.VNb3DAheO5YBx0rtSrk0S9vh13MI3TQlN0VnICQRAJk',
+      url: AppConfig.supabaseUrl,
+      anonKey: AppConfig.supabaseAnonKey,
       debug: true,
     );
     log("✅ Supabase Initialized Successfully");
@@ -29,6 +30,7 @@ Future<void> main() async {
     log("❌ Supabase initialization error: $e");
     runApp(const ErrorApp());
   }
+}
 }
 
 class ErrorApp extends StatelessWidget {

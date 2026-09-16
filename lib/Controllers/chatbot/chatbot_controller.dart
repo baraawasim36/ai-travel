@@ -3,13 +3,14 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tour_guide_application/core/config/app_config.dart';
 
 class ChatbotController extends ChangeNotifier {
   // Supabase client
   final SupabaseClient supabase = Supabase.instance.client;
 
-  // API KEY and RESPONSE TEXT
-  final String apiKey = 'AIzaSyBwEMqDZsa6oVX6PvEV_uRW2XwrytbvgL4'; // Move to secure storage
+  // AI service endpoint (Edge Function) - configured via --dart-define
+  static const String aiEndpoint = String.fromEnvironment('AI_ENDPOINT');
 
   String responseText = '';
 
@@ -81,7 +82,7 @@ class ChatbotController extends ChangeNotifier {
     }
   }
 
-  // METHOD TO FETCH THE RESPONSE FROM GEMINI API
+  // METHOD TO FETCH THE RESPONSE FROM AI SERVICE (Edge Function)
   Future<void> fetchResponse(String message) async {
     try {
       // Add user message to list and save to Supabase
@@ -93,28 +94,21 @@ class ChatbotController extends ChangeNotifier {
       // Save user message to Supabase
       await saveMessage('user', message);
 
-      final url = Uri.parse(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey',
-      );
+      // Call AI via Edge Function (server-side)
+      final url = Uri.parse(aiEndpoint);
 
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'contents': [
-            {
-              'parts': [
-                {'text': message},
-              ],
-            },
-          ],
+          'message': message,
+          'user_id': supabase.auth.currentUser?.id,
         }),
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        responseText = data['candidates']?[0]['content']?['parts']?[0]['text'] ??
-            'No response received';
+        responseText = data['response'] ?? 'No response received';
 
         messages.add({'sender': 'bot', 'text': responseText});
         await saveMessage('bot', responseText);

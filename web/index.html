@@ -6,6 +6,7 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="A new Flutter project.">
+  <meta name="google-maps-api-key" content="GOOGLE_MAPS_API_KEY_PLACEHOLDER">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -19,11 +20,19 @@
   <title>tour_guide_application</title>
   <link rel="manifest" href="manifest.json">
 
-  <!-- ← Add your Google Maps JS API here: -->
-  <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAeaU65bPgJ0XnoQy1Js9gmwxG_ixb_f0w">
+  <!-- Google Maps JS API - key injected at build time -->
+  <script id="google-maps-api">
+    (function() {
+      var key = document.querySelector('meta[name="google-maps-api-key"]').content;
+      if (key && key !== 'GOOGLE_MAPS_API_KEY_PLACEHOLDER') {
+        var script = document.createElement('script');
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=' + key;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+    })();
   </script>
-  <!-- ↑ Replace YOUR_API_KEY_HERE with your actual API key -->
 
 </head>
 <body>

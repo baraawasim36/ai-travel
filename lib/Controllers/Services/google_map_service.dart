@@ -4,9 +4,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:tour_guide_application/core/config/app_config.dart';
 
 class GoogleMapService {
-  static const apiKey = "AIzaSyAeaU65bPgJ0XnoQy1Js9gmwxG_ixb_f0w";
+  static const apiKey = AppConfig.googleMapsApiKey;
   static final tts = FlutterTts();
 
   static Future<LatLng> getCurrentLocation() async {

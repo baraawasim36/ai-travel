@@ -66,34 +66,24 @@ class Routes {
       editProfile: (context) => const EditProfileScreen(),
       helpCenter: (context) => const HelpCenterScreen(),
       citySelection: (context) => const CitySelectionScreen(),
-      map: (context) => MapScreen(placeName: 'Default Place', destination: LatLng(0.0, 0.0)),
+      // map route requires arguments, handled in generateRoute
       mapSelection: (context) => const MapSelectionScreen(),
       viewAlbum: (context) => const ViewAlbumScreen(),
       addPhoto: (context) => const CreateAlbumScreen(),
-      review: (context) => const ReviewScreen(backgroundColor: Colors.transparent,),
+      review: (context) => const ReviewScreen(backgroundColor: Colors.transparent),
       locationEntry: (context) => LocationEntryScreen(),
       hireTourGuide: (context) => const HireTourGuideScreen(),
-      //destinationInfo: (context) {
-      //   final args = ModalRoute.of(context)!.settings.arguments as String;
-      //   return DestinationInfoScreen(placeId: args);
-      // },
-      // confirmation: (context) => const ConfirmationScreen(
-      //       guideName: 'Guide Name',
-      //       duration: '2 hours',
-      //       totalAmount: 100.0,
-      //       bookingId: 'ABC123',
-      //     ),
       payment: (context) => const PaymentScreen(
-            guideName: 'Guide Name',
-            duration: '2 hours',
-            totalAmount: 100.0,
-            bookingId: 'ABC123',
+            guideName: '',
+            duration: '',
+            totalAmount: 0.0,
+            bookingId: '',
           ),
       billing: (context) => const BillingDetailsScreen(
-            guideName: 'Default Guide',
+            guideName: '',
             price: 0,
-            imageUrl: 'https://example.com/default-image.jpg',
-          ), // Replace with actual BillingScreen implementation
+            imageUrl: '',
+          ),
       profile: (context) => const ProfileScreen(),
       authGate: (context) => const AuthGate(),
       logo: (context) => const LogoScreen(),
@@ -103,7 +93,7 @@ class Routes {
     };
   }
 
-  static Route<dynamic> generateRoute(RouteSettings settings) {
+static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case home:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
@@ -121,9 +111,12 @@ class Routes {
         //   builder: (_) => DestinationInfoScreen(placeId: args),
         // );
       case map:
-        return MaterialPageRoute(builder: (_) => MapScreen(placeName: 'Default Place', destination: LatLng(0.0, 0.0)));
+        final args = settings.arguments as Map<String, dynamic>?;
+        final placeName = args?['placeName'] as String? ?? 'Unknown Place';
+        final destination = args?['destination'] as LatLng? ?? const LatLng(0.0, 0.0);
+        return MaterialPageRoute(builder: (_) => MapScreen(placeName: placeName, destination: destination));
       case viewAlbum:
-        final args = settings.arguments as String;
+        final args = settings.arguments as String?;
         return MaterialPageRoute(
           builder: (_) => ViewAlbumScreen(),
         );
@@ -134,33 +127,36 @@ class Routes {
       case review:
         return MaterialPageRoute(builder: (_) => const ReviewScreen(backgroundColor: Colors.transparent,));
       case confirmation:
+        final args = settings.arguments as Map<String, dynamic>?;
         return MaterialPageRoute(
-          builder: (_) => const ConfirmationScreen(
-            guideName: 'Guide Name',
-            duration: '2 hours',
-            totalAmount: 100.0,
-            bookingId: 'ABC123',
+          builder: (_) => ConfirmationScreen(
+            guideName: args?['guideName'] as String? ?? '',
+            duration: args?['duration'] as String? ?? '',
+            totalAmount: args?['totalAmount'] as double? ?? 0.0,
+            bookingId: args?['bookingId'] as String? ?? '',
           ),
         );
       case payment:
+        final args = settings.arguments as Map<String, dynamic>?;
         return MaterialPageRoute(
-          builder: (_) => const PaymentScreen(
-            guideName: 'Guide Name',
-            duration: '2 hours',
-            totalAmount: 100.0,
-            bookingId: 'ABC123',
+          builder: (_) => PaymentScreen(
+            guideName: args?['guideName'] as String? ?? '',
+            duration: args?['duration'] as String? ?? '',
+            totalAmount: args?['totalAmount'] as double? ?? 0.0,
+            bookingId: args?['bookingId'] as String? ?? '',
           ),
         );
       case billing:
+        final args = settings.arguments as Map<String, dynamic>?;
         return MaterialPageRoute(
-          builder: (_) => const BillingDetailsScreen(
-            guideName: 'Default Guide',
-            price: 0,
-            imageUrl: 'https://example.com/default-image.jpg',
+          builder: (_) => BillingDetailsScreen(
+            guideName: args?['guideName'] as String? ?? '',
+            price: args?['price'] as int? ?? 0,
+            imageUrl: args?['imageUrl'] as String? ?? '',
           ),
-        ); // Replace with actual BillingScreen implementation
+        );
       case locationEntry:
-       return MaterialPageRoute(builder: (_) => LocationEntryScreen());
+        return MaterialPageRoute(builder: (_) => LocationEntryScreen());
       case hireTourGuide:
         return MaterialPageRoute(builder: (_) => const HireTourGuideScreen());
       case profile:
@@ -246,8 +242,12 @@ class Routes {
     Navigator.pushNamed(context, citySelection);
   }
 
-  static void navigateToMap(BuildContext context) {
-    Navigator.pushNamed(context, map);
+  static void navigateToMap(BuildContext context, {required String placeName, required LatLng destination}) {
+    Navigator.pushNamed(
+      context,
+      map,
+      arguments: {'placeName': placeName, 'destination': destination},
+    );
   }
 
   static void navigateToAddPhoto(BuildContext context) {
@@ -280,5 +280,57 @@ class Routes {
 
   static void navigateToChatbot(BuildContext context) {
     Navigator.pushNamed(context, chatbot);
+  }
+
+  static void navigateToConfirmation(BuildContext context, {
+    required String guideName,
+    required String duration,
+    required double totalAmount,
+    required String bookingId,
+  }) {
+    Navigator.pushNamed(
+      context,
+      confirmation,
+      arguments: {
+        'guideName': guideName,
+        'duration': duration,
+        'totalAmount': totalAmount,
+        'bookingId': bookingId,
+      },
+    );
+  }
+
+  static void navigateToPayment(BuildContext context, {
+    required String guideName,
+    required String duration,
+    required double totalAmount,
+    required String bookingId,
+  }) {
+    Navigator.pushNamed(
+      context,
+      payment,
+      arguments: {
+        'guideName': guideName,
+        'duration': duration,
+        'totalAmount': totalAmount,
+        'bookingId': bookingId,
+      },
+    );
+  }
+
+  static void navigateToBilling(BuildContext context, {
+    required String guideName,
+    required int price,
+    required String imageUrl,
+  }) {
+    Navigator.pushNamed(
+      context,
+      billing,
+      arguments: {
+        'guideName': guideName,
+        'price': price,
+        'imageUrl': imageUrl,
+      },
+    );
   }
 }
